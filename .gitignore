@@ -1,0 +1,8 @@
+# folders
+.vscode/
+
+# debug, exe
+*.exe
+
+# test cases
+*.txt
