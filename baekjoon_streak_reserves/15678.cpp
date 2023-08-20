@@ -44,29 +44,31 @@ using p5l = tuple<ll, ll, ll, ll, ll>;
 using p3l = tuple<ll, ll, ll>;
 
 
-int coins[101];
-int dp[101][10001];
+ll dp[100'000];
+//dp[i] = max score ending at spot
+//dp[i] = max(i-D <= j < i)dp[j] -> uses monotone queue
+vi arr;
 int main() {
-    //fastio;
-    int N, K;
-    cin >> N >> K;
-    range(c, 1, N+1) {
-        cin >> coins[c];
-    }
-    fill(dp[0]+1, dp[0] + 10001, INF);
-    for (int i = 1; i <= N; ++i) {
-        //considering up to ith coin
-        for (int s = 0; s <= K; ++s) {
-            dp[i][s] = dp[i - 1][s];
-            if (s - coins[i] >= 0) dp[i][s] = min(dp[i][s], 1 + dp[i][s - coins[i]]);
-        }
-    }
-    if (dp[N][K] != INF) {
-        cout << dp[N][K] << endl;
-    }
-    else {
-        cout << -1 << endl;
+    fastio;
+    int N, D;
+    cin >> N >> D;
+    arr.resize(N);
+    loop(i, N) cin >> arr[i];
+
+    deque<int> steps;
+    dp[0] = arr[0];//init
+    ll answer = dp[0];
+    steps.push_back(0);
+
+    for (int i = 1; i < N; ++i) {
+        while (steps.size() && steps.front() < i - D) steps.pop_front(); //discard old items
+        dp[i] = arr[i] + max((ll)0, dp[steps.front()]);
+        while (steps.size() && dp[steps.back()] < dp[i]) steps.pop_back(); //steps may become empty
+        steps.push_back(i);
+
+        answer = max(dp[i], answer);
     }
 
+    cout << answer << endl;
     return 0;
 }
